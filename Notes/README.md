@@ -163,3 +163,81 @@ Steps to develop a machine learning model
 
 One approach that can be use is to after testing and checking your model performance is to use the validation data into the training data and run the model again, which is expected to give better results. 
 
+
+## Linear algebra refresher
+
+### Matrix-Vector multiplication
+
+
+![matrix_vector](https://github.com/sotoblanco/ML-Zoomcamp/blob/main/gif/matrix_vector.gif)
+
+
+### Code implementation Matrix-Vector
+
+```python
+def matrix_vector_multiplication(U, v):
+    assert U.shape[1] == v.shape[0]
+    
+    num_rows = U.shape[0]
+    
+    result = np.zeros(num_rows)
+    
+    for i in range(num_rows):
+        result[i] = vector_vector_multiplication(U[i], v)
+    
+    return result
+```
+
+### NumPy Matrix-Vector
+
+```python
+import numpy as np
+
+U.dot(v)
+```
+
+### Matrix-Matrix Multiplication
+
+![matrix_matrix](https://github.com/sotoblanco/ML-Zoomcamp/blob/main/gif/matrix_matrix.gif)
+
+### Code implementation Matrix-Matrix multiplication
+
+```python
+def matrix_matrix_multiplication(U, V):
+    assert U.shape[1] == V.shape[0]
+    
+    num_rows = U.shape[0]
+    num_cols = V.shape[1]
+    
+    result = np.zeros((num_rows, num_cols))
+    
+    for i in range(num_cols):
+        vi = V[:, i]
+        Uvi = matrix_vector_multiplication(U, vi)
+        result[:, i] = Uvi
+    
+    return result
+```
+
+
+### Matrix-Matrix Identity
+
+Why matrix identity returns the same matrix
+
+![matrix_matrix_identity](https://github.com/sotoblanco/ML-Zoomcamp/blob/main/gif/matrix_matrix_indentity.gif)
+
+### Code implementation Matrix-Matrix Identity
+
+```python
+I = eye(3)
+V = np.array([
+    [1, 1, 2],
+    [0, 0.5, 1], 
+    [0, 2, 1],
+])
+inv = np.linalg.inv(V)
+
+```
+
+
+
