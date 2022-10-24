@@ -5,12 +5,14 @@ model_ref = bentoml.xgboost.get("credit_risk_model:latest")
 dv = model_ref.custom_objects['dictVectorizer']
 
 model_runner = model_ref.to_runner()
-svc = bentoml.Service("credit_risk_classifier", runners=[model_runner])
+
+svc = bentoml.Service("Credit_risk_classifier", runners=[model_runner])
+
 
 @svc.api(input=JSON(), output=JSON())
-def classify(application_data):
+async def classify(application_data):
     vector = dv.transform(application_data)
-    prediction = model_runner.predict.run(vector)
+    prediction = await model_runner.predict.async_run(vector)
     print(prediction)
 
     result = prediction[0]
