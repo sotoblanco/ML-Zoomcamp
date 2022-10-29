@@ -4,9 +4,10 @@ import requests                    # for "get" request to API
 import json                        # parse json into a list
 import pandas as pd                # working with data frames
 import datetime as dt              # working with dates
-#import os
-#import time
-#from threading import Thread
+import os
+import pytz
+# import time
+# from threading import Thread
 
 # this function allow to get the data from binance on EST time
 
@@ -36,13 +37,12 @@ def get_binance_bars(symbol, interval, startTime, endTime):
      
     df.index = [dt.datetime.fromtimestamp(x / 1000.0) for x in df.datetime]
 
+    # EST TIME
     df.index = df.index - pd.to_timedelta(4, unit="h")
  
     return df
 
-import os.path
-
-if not os.path.isfile('data/BTCUSDT_historical.csv'):
+if not os.path.isfile('BTCUSDT_historical_1m.parquet'):
     print ("File not exist")
     start_time = dt.datetime(2017, 6, 17)
     df = pd.DataFrame()
@@ -50,21 +50,23 @@ if not os.path.isfile('data/BTCUSDT_historical.csv'):
 else:
     print ("File exist")
     # read the data previously store in your directory
-    df = pd.read_csv("data/BTCUSDT_historical.csv", index_col="Unnamed: 0", parse_dates=True)
+    df = pd.read_parquet("BTCUSDT_historical_1m.parquet")
     # get the last index value
     start_time = df.index[-5]
 
-now_time = dt.datetime.now()
+now_time = dt.datetime.now(pytz.timezone('America/New_York'))
 
 while True:
-  btc = get_binance_bars("BTCUSDT", "1h", start_time, now_time)
+  print(start_time)
+  btc = get_binance_bars("BTCUSDT", "1m", start_time, now_time)
   print(btc.index[-1])
   df = pd.concat([df, btc])
   
-  if btc.index[-1].date() == now_time.date():
+  if btc.index[-1].strftime("%Y-%m-%d %H:%M") == now_time.strftime("%Y-%m-%d %H:%M"):
     break
   start_time = btc.index[-1]
 
 df.sort_index(inplace=True)
 df = df[~df.index.duplicated(keep='last')]
-df.to_csv("data/BTCUSDT_historical.csv")
+df.to_parquet("BTCUSDT_historical_1m.parquet")
+print(df.index[-1])
