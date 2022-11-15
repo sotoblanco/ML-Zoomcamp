@@ -5,7 +5,9 @@ import numpy as np
 import datetime 
 
 # %%
-df = pd.read_csv("BTCUSDT_historical.csv", index_col="Unnamed: 0", parse_dates=True)
+df = pd.read_csv("BTCUSDT_historical_1h.csv", index_col="Unnamed: 0", parse_dates=True)
+
+df.index = df.index - pd.to_timedelta(4, unit='h')
 
 df_day = df[(df.index.time >= datetime.time(9))
    & (df.index.time <= datetime.time(16))]
@@ -55,6 +57,7 @@ for i in features:
     numerical_features.append(f"ret_distance_p{i}_open")
 
 export_data = day_night[categorical_features + numerical_features]
+export_data.dropna(inplace=True)
 export_data.to_csv("BTC_feature_data.csv")
 
 

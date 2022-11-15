@@ -10,13 +10,8 @@ df.dropna(inplace=True)
 
 
 df_train_full, df_test = train_test_split(df, test_size=0.2, random_state=1)
-df_train, df_val = train_test_split(df_train_full, test_size=0.33, random_state=11)
-
-y_train = df_train.phigh_day_touch.values
-y_val = df_val.phigh_day_touch.values
 
 df_train_full = df_train_full.reset_index(drop=True)
-df_train.reset_index(inplace=True, drop=True)
 
 categorical = ["phigh_day_touch", "plow_day_touch","phigh_night_touch", "plow_night_touch"]
 
@@ -32,8 +27,8 @@ X_full_train = dv.fit_transform(dicts_full_train)
 dfulltrain = xgb.DMatrix(X_full_train, label=y_train_full)
 
 xgb_params = {
-    'eta':0.1,
-    'max_depth': 3,
+    'eta':0.3,
+    'max_depth': 1,
     'min_child_weight':7,
 
     'objective':'binary:logistic',
@@ -45,16 +40,20 @@ xgb_params = {
 
 }
 
-model = xgb.train(xgb_params, dfulltrain, num_boost_round=125)
+model = xgb.train(xgb_params, dfulltrain, num_boost_round=30)
 
-# bentoml.xgboost.save_model("previous_high_model", model,
-#                             custom_objects={
-#                                 "dictVectorizer":dv
-#                             },
-#                             signatures={
-#                                 "predict": {
-#                                     "batchable":True,
-#                                     "batch_dim":0,
-#                                 }
-#                             })
+bentoml.xgboost.save_model("previous_high_model", model,
+                            custom_objects={
+                                "dictVectorizer":dv
+                            },
+                            signatures={
+                                "predict": {
+                                    "batchable":True,
+                                    "batch_dim":0,
+                                }
+                            })
+
+import json
+request = df_test[numerical].iloc[0].to_dict()
+print(json.dumps(request, indent=2))
 
