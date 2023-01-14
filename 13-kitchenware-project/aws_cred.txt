@@ -1,0 +1,13 @@
+$(aws ecr get-login --no-include)
+
+ACCOUNT=924626007762
+
+REGION=us-west-2
+
+REGISTRY=kitchenware-images
+
+PREFIX=${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${REGISTRY}
+
+TAG=kitchenware-class-model-v1-001
+
+REMOTE_URI=${PREFIX}:${TAG}
